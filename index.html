@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بطاقة التهنئة - عيد الأضحى</title>
+    <link href="https://fonts.cdnfonts.com/css/bahij" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+    <style>
+        :root {
+            --primary-blue: #1398cb;
+            --button-grad: linear-gradient(135deg, #1398cb 0%, #0d6f96 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cairo', 'Tajawal', sans-serif;
+            background: linear-gradient(135deg, #f0f4f8 0%, #e8f1f7 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            display: flex;
+            gap: 40px;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            justify-content: center;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .control-panel {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            border: 2px solid #e0e7ff;
+        }
+
+        .control-panel h1 {
+            color: #1398cb;
+            font-size: 28px;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .control-panel .subtitle {
+            color: #d4af37;
+            font-size: 18px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .control-panel label {
+            display: block;
+            margin-bottom: 12px;
+            font-weight: 700;
+            color: #333;
+            font-size: 16px;
+        }
+
+        .control-panel input {
+            width: 100%;
+            padding: 14px 16px;
+            font-size: 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            outline: none;
+            transition: all 0.3s ease;
+            text-align: right;
+            font-family: 'Tajawal', sans-serif;
+            margin-bottom: 20px;
+        }
+
+        .control-panel input:focus {
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(19, 152, 203, 0.1);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            flex-direction: column;
+        }
+
+        .control-panel button {
+            padding: 14px 28px;
+            font-size: 16px;
+            font-weight: 700;
+            color: #fff;
+            background: var(--button-grad);
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(19, 152, 203, 0.3);
+            width: 100%;
+        }
+
+        .control-panel button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(19, 152, 203, 0.4);
+        }
+
+        .control-panel button:active {
+            transform: translateY(0);
+        }
+
+        .control-panel button.secondary {
+            background: #f0f4f8;
+            color: #1398cb;
+            border: 2px solid #1398cb;
+        }
+
+        .control-panel button.secondary:hover {
+            background: #e8f1f7;
+        }
+
+        .preview-section {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .card-wrapper {
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            border-radius: 12px;
+            overflow: hidden;
+            background: white;
+            width: 540px;
+            height: 960px;
+        }
+
+        #cardCanvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        .info-box {
+            background: #e8f1f7;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border-right: 4px solid #1398cb;
+            text-align: right;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .info-box strong {
+            color: #1398cb;
+        }
+
+        @media (max-width: 1024px) {
+            .container {
+                flex-direction: column;
+                gap: 30px;
+            }
+
+            .card-wrapper {
+                width: 100%;
+                max-width: 100%;
+            }
+        }
+
+        .loading {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 30px 50px;
+            border-radius: 10px;
+            z-index: 1000;
+            font-size: 18px;
+            font-weight: bold;
+            border: 3px solid #1398cb;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .success-message {
+            display: none;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #4CAF50;
+            color: white;
+            padding: 20px 30px;
+            border-radius: 10px;
+            z-index: 1001;
+            font-weight: bold;
+            animation: slideIn 0.3s ease;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+            }
+            to {
+                transform: translateX(0);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="loading" id="loadingSpinner">⏳ جاري تحضير البطاقة...</div>
+    <div class="success-message" id="successMessage">✅ تم التحميل بنجاح!</div>
+
+    <div class="container">
+        <div class="control-panel">
+            <h1>أضحى مبارك</h1>
+            <div class="subtitle">وكل عام وأنتم بخير</div>
+            
+            <label for="empName">أدخل اسم الموظف:</label>
+            <input type="text" id="empName" placeholder="أدخل الاسم هنا..." oninput="drawCard()">
+            
+            <div class="button-group">
+                <button onclick="downloadCard()">📥 تحميل البطاقة PNG</button>
+                <button class="secondary" onclick="printCard()">🖨️ طباعة البطاقة</button>
+            </div>
+
+            <div class="info-box">
+                <strong>💡 تعليمات الاستخدام:</strong><br>
+                1️⃣ اكتب اسمك في الحقل<br>
+                2️⃣ اضغط "تحميل البطاقة"<br>
+                3️⃣ أرسلها في الواتس 📱
+            </div>
+        </div>
+
+        <div class="preview-section">
+            <div class="card-wrapper">
+                <canvas id="cardCanvas" width="1080" height="1920"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('cardCanvas');
+        const ctx = canvas.getContext('2d');
+        const loading = document.getElementById('loadingSpinner');
+        const successMsg = document.getElementById('successMessage');
+
+        function drawCard() {
+            const empName = document.getElementById('empName').value.trim() || '';
+            
+            // مسح الـ Canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // رسم الخلفية المتدرجة
+            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            gradient.addColorStop(0, '#ffffff');
+            gradient.addColorStop(0.5, '#e8f1f7');
+            gradient.addColorStop(1, '#f0f4f8');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // رسم شريط ملون في الأعلى
+            ctx.fillStyle = '#1398cb';
+            ctx.fillRect(0, 0, canvas.width, 150);
+
+            // رسم النص الأساسي "أضحى مبارك" في الأعلى
+            ctx.font = 'bold 100px Tajawal';
+            ctx.fillStyle = '#ffffff';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('أضحى مبارك', canvas.width / 2, 100);
+
+            // رسم النص الفرعي
+            ctx.font = 'bold 50px Tajawal';
+            ctx.fillStyle = '#d4af37';
+            ctx.fillText('وكل عام وأنتم بخير', canvas.width / 2, 350);
+
+            // رسم شكل تزييني (مثلث يمثل الكعبة)
+            ctx.fillStyle = '#d4af37';
+            ctx.beginPath();
+            ctx.moveTo(canvas.width / 2, 450);
+            ctx.lineTo(canvas.width / 2 - 150, 700);
+            ctx.lineTo(canvas.width / 2 + 150, 700);
+            ctx.closePath();
+            ctx.fill();
+
+            // رسم مستطيل للكعبة
+            ctx.fillStyle = '#1398cb';
+            ctx.fillRect(canvas.width / 2 - 120, 650, 240, 100);
+
+            // رسم الدائرة (ساعة)
+            ctx.beginPath();
+            ctx.arc(canvas.width / 2, 550, 50, 0, Math.PI * 2);
+            ctx.fillStyle = '#d4af37';
+            ctx.fill();
+            ctx.strokeStyle = '#1398cb';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+
+            // رسم الصندوق الأزرق لاسم الموظف
+            ctx.fillStyle = '#1398cb';
+            ctx.fillRect(canvas.width / 2 - 300, canvas.height * 0.6, 600, 120);
+
+            // رسم اسم الموظف
+            ctx.font = 'bold 90px Tajawal';
+            ctx.fillStyle = '#ffffff';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.shadowColor = 'rgba(0,0,0,0.3)';
+            ctx.shadowBlur = 10;
+            ctx.shadowOffsetX = 2;
+            ctx.shadowOffsetY = 2;
+            
+            if (empName) {
+                ctx.fillText(empName, canvas.width / 2, canvas.height * 0.66);
+            } else {
+                ctx.font = 'bold 70px Tajawal';
+                ctx.fillStyle = 'rgba(255,255,255,0.5)';
+                ctx.fillText('اسم الموظف', canvas.width / 2, canvas.height * 0.66);
+            }
+
+            // إزالة الظل
+            ctx.shadowColor = 'transparent';
+
+            // رسم نص التهنئة في الأسفل
+            ctx.font = 'bold 40px Tajawal';
+            ctx.fillStyle = '#1398cb';
+            ctx.textAlign = 'center';
+            ctx.fillText('Eid Mubarak!', canvas.width / 2, canvas.height - 80);
+
+            ctx.font = 'bold 35px Tajawal';
+            ctx.fillStyle = '#666';
+            ctx.fillText('كل عام وأنتم أقرب إلى أحلامكم', canvas.width / 2, canvas.height - 20);
+        }
+
+        function downloadCard() {
+            const empName = document.getElementById('empName').value.trim();
+            
+            if (!empName) {
+                alert('⚠️ من فضلك أدخل اسم الموظف أولاً');
+                return;
+            }
+
+            loading.classList.add('show');
+
+            setTimeout(() => {
+                html2canvas(canvas, {
+                    scale: 2,
+                    backgroundColor: null,
+                    logging: false,
+                    useCORS: true,
+                    allowTaint: true
+                }).then(function(generatedCanvas) {
+                    const link = document.createElement('a');
+                    link.href = generatedCanvas.toDataURL('image/png');
+                    link.download = `بطاقة_تهنئة_${empName}.png`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    
+                    loading.classList.remove('show');
+                    
+                    successMsg.classList.add('show');
+                    setTimeout(() => {
+                        successMsg.classList.remove('show');
+                    }, 3000);
+                    
+                }).catch(function(error) {
+                    loading.classList.remove('show');
+                    alert('❌ حدث خطأ: ' + error.message);
+                });
+            }, 300);
+        }
+
+        function printCard() {
+            const empName = document.getElementById('empName').value.trim();
+            
+            if (!empName) {
+                alert('⚠️ من فضلك أدخل اسم الموظف أولاً');
+                return;
+            }
+
+            loading.classList.add('show');
+
+            setTimeout(() => {
+                html2canvas(canvas, {
+                    scale: 2,
+                    backgroundColor: null,
+                    logging: false,
+                    useCORS: true,
+                    allowTaint: true
+                }).then(function(generatedCanvas) {
+                    const printWindow = window.open('', '', 'height=800,width=1000');
+                    printWindow.document.write('<html><head><title>طباعة البطاقة</title></head><body style="margin:0;padding:0;">');
+                    printWindow.document.write('<img src="' + generatedCanvas.toDataURL('image/png') + '" style="width:100%;height:auto;"/>');
+                    printWindow.document.write('</body></html>');
+                    printWindow.document.close();
+                    
+                    setTimeout(() => {
+                        printWindow.print();
+                        loading.classList.remove('show');
+                    }, 500);
+                    
+                }).catch(function(error) {
+                    loading.classList.remove('show');
+                    alert('❌ خطأ في الطباعة: ' + error.message);
+                });
+            }, 300);
+        }
+
+        // تحديث البطاقة عند تحميل الصفحة
+        window.addEventListener('load', function() {
+            drawCard();
+        });
+
+        // تحديث عند تغيير حجم النافذة
+        window.addEventListener('resize', function() {
+            drawCard();
+        });
+    </script>
+
+</body>
+</html>
